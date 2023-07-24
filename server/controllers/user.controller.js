@@ -85,8 +85,32 @@ const login = async (req, res, next) => {
   }
 };
 
-const logout = (req, res) => {};
+const logout = (req, res) => {
+  res.cookie('token', null, {
+    secure: true,
+    maxAge : 0,
+    httpOnly : true
+  });
 
-const getProfile = (req, res) => {};
+  res.status(200).json ({
+    success: true,
+    message: 'User logout successfully'
+  })
+};
+
+const getProfile = async (req, res) => {
+  try {
+      const userId = req.user.id;
+      const user = await User.findById(userId);
+
+      res.status(200).json({
+        success: true,
+        message: "User Details",
+        user
+      });
+  } catch (e) {
+    return next(new AppError('Failed to fetch User details', 500))
+  }
+};
 
 export { register, login, logout, getProfile };
