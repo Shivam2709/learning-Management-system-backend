@@ -41,7 +41,6 @@ const register = async (req, res, next) => {
   }
 
   //  File upload logic
-  console.log('File details > ',JSON.stringify(req.file));
   if(req.file) {
     try {
       const result = await cloudinary.v2.uploader.upload(req.file.path, {
@@ -57,7 +56,7 @@ const register = async (req, res, next) => {
         user.avatar.secure_url = result.secure_url;
 
         // Remove file from server
-        fs.rm(`upload/${req.file.filename}`)
+        fs.rm(`uploads/${req.file.filename}`)
       }
     } catch (e) {
         return next(
