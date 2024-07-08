@@ -1,9 +1,0 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-body {
-    margin: auto;
-    position: relative;
-    background-color: #191818;
-}
