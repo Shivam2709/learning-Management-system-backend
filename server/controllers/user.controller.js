@@ -12,7 +12,7 @@ const cookieOptions = {
 
 //#region REGISTER FORM
 const register = async (req, res, next) => {
-  const { fullName, email, password } = req.body;
+  const { fullName, email, password} = req.body;
 
   if (!fullName || !email || !password) {
     return next(new AppError("All fields are required", 400));
@@ -42,7 +42,6 @@ const register = async (req, res, next) => {
 
   //  File upload logic
   if (req.file) {
-    //console.log("req.file", req.file);
     try {
       const result = await cloudinary.v2.uploader.upload(req.file.path, {
         folder: "lms",
@@ -58,12 +57,9 @@ const register = async (req, res, next) => {
         user.avatar.secure_url = result.secure_url;
 
         // Remove file from local store
-        await fs.rm(`uploads/${req.file.filename}`);
-      }else {
-        //console.log("Cloudinary upload failed, result:", result);
+        await fs.rm(`upload/${req.file.filename}`);
       }
     } catch (e) {
-      //console.error("Error uploading to Cloudinary:", e);
       return next(new AppError(e || "File not uploaded try again", 500));
     }
   }
@@ -76,7 +72,7 @@ const register = async (req, res, next) => {
 
   res.cookie("token", token, cookieOptions);
 
-  res.status(200).json({
+  res.status(201).json({
     success: true,
     message: "User registered successfully",
     user,

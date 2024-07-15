@@ -1,5 +1,7 @@
 import  express from 'express';
 import cors from 'cors';
+import { config } from 'dotenv';
+config();
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import userRoutes from './routes/user.routes.js'
@@ -13,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 
 app.use(cors({
-    origin: [process.env.FRONTEND_URL],
+    origin:`http://localhost:${process.env.FRONTEND_URL}`,
     credentials: true
 }));
 
