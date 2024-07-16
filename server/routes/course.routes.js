@@ -8,11 +8,16 @@ const router = new Router();
 router.route('/')
         .get(getAllCourses)
         .post(
-            // isLoggedIn,
-            // authorizedRoles('ADMIN'),
-            upload.single('course'),
+             isLoggedIn,
+             authorizedRoles('ADMIN'),
+            upload.single('thumbnail'),
             createCourse
-        );
+        )
+        .delete(
+            isLoggedIn,
+            authorizedRoles('ADMIN'),
+            removeCourse
+        )
 
 router.route('/:id')
         .get(isLoggedIn, authorizeSubscriber, getLecturesByCourseId)
@@ -20,11 +25,6 @@ router.route('/:id')
             isLoggedIn,
             authorizedRoles('ADMIN'),
             updateCourse
-        )
-        .delete(
-            isLoggedIn,
-            authorizedRoles('ADMIN'),
-            removeCourse
         )
         .post(
             isLoggedIn,

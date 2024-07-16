@@ -113,16 +113,23 @@ const login = async (req, res, next) => {
 
 //#region LOGOUT
 const logout = (req, res) => {
-  res.cookie("token", null, {
-    secure: true,
-    maxAge: 0,
-    httpOnly: true,
-  });
-
-  res.status(200).json({
-    success: true,
-    message: "User logout successfully",
-  });
+  try{
+    res.cookie("token", null, {
+      secure: process.env.NODE_ENV === 'production'? true : false,
+      maxAge: 0,
+      httpOnly: true,
+    });
+  
+    res.status(200).json({
+      success: true,
+      message: "User logout successfully",
+    });
+  }catch(e){
+      res.status(400).json({
+          success: false,
+          message: e.message
+      })
+  }
 };
 
 //#region GET PROFILE
