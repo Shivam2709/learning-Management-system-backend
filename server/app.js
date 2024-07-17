@@ -5,6 +5,7 @@ config();
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import userRoutes from './routes/user.routes.js'
+import contactRoutes from './routes/miscellaneous.routes.js'
 import coursesRoutes from './routes/course.routes.js'
 import PaymentRoutes from './routes/payment.route.js'
 import errorMiddleware from './middlewares/error.middleware.js';
@@ -27,6 +28,7 @@ app.use('/ping', function(req, res){
 });
 
 // routes of 3 modules
+app.use('/api/v1/contact', contactRoutes)
 app.use('/api/v1/user', userRoutes)
 app.use('/api/v1/courses', coursesRoutes)
 app.use('/api/v1/payments', PaymentRoutes)
