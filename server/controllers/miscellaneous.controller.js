@@ -15,7 +15,7 @@ const contactUs = async (req, res, next) => {
         await contactMessage.save();
         res.status(200).json({
             success: true,
-            message: "Received Your Message..",
+            message: "receive Your Message Successfully...",
             contactMessage,
         });
     }catch(err){

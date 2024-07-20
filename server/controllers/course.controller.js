@@ -48,11 +48,11 @@ const createCourse = async (req, res, next) => {
         category,
         createdBy,
         thumbnail: {
-            public_id: 'Dummy',
-            secure_url: 'Dummy',
-         },
+            public_id: Course._id,
+            secure_url:"https://res.cloudinary.com/du9jzqlpt/image/upload/v1674647316/avatar_drzgxy.jpg",
+    },
     });
-     console.log(JSON.stringify(course));
+     
     if(!course) {
         return next(new AppError('Course could not be created, please try again', 500));
     }
@@ -68,7 +68,7 @@ const createCourse = async (req, res, next) => {
                 course.thumbnail.secure_url = result.secure_url;
             }
     
-            fs.rm(`uploads/${req.file.filename}`);
+            fs.rm(`upload/${req.file.filename}`);
 
         }catch(e) {
             return next(new AppError(e.message, 500))
@@ -159,6 +159,7 @@ const addLectureToCourseById = async (req, res, next) => {
                 folder: 'lms'
             });
             if (result) {
+                course.thumbnail = course.thumbnail || {};
                 lectureData.lecture.public_id = result.public_id;
                 lectureData.lecture.secure_url = result.secure_url;
             }
