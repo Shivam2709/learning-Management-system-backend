@@ -254,8 +254,10 @@ const changePassword = async (req, res, next) => {
 
 //#region UPDATE PROFILE
 const updateProfile = async (req, res, next) => {
-  const { fullName } = req.body;
-  const { id } = req.user.id;
+  const { fullName, email } = req.body; // Include email in request body
+  const { id } = req.user; // Assuming req.user contains user id
+
+  console.log('body', req.body); // Log request body
 
   const user = await User.findById(id);
 
@@ -263,8 +265,12 @@ const updateProfile = async (req, res, next) => {
     return next(new AppError("User does not exist", 400));
   }
 
-  if (req.fullName) {
+  if (fullName) {
     user.fullName = fullName;
+  }
+
+  if (email) {
+    user.email = email; // Update email if provided
   }
 
   if (req.file) {
@@ -287,7 +293,7 @@ const updateProfile = async (req, res, next) => {
         fs.rm(`upload/${req.file.filename}`);
       }
     } catch (e) {
-      return next(new AppError(e || "File not uploaded try again", 500));
+      return next(new AppError(e || "File not uploaded, try again", 500));
     }
   }
 
@@ -298,6 +304,8 @@ const updateProfile = async (req, res, next) => {
     message: "Profile updated successfully",
   });
 };
+
+
 
 export {
   register,
