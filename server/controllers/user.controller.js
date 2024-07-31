@@ -257,8 +257,6 @@ const updateProfile = async (req, res, next) => {
   const { fullName, email } = req.body; // Include email in request body
   const { id } = req.user; // Assuming req.user contains user id
 
-  console.log('body', req.body); // Log request body
-
   const user = await User.findById(id);
 
   if (!user) {
