@@ -1,3 +1,4 @@
+import Payment from "../models/payment.model.js";
 import User from "../models/user.model.js";
 import { razorpay } from "../server.js";
 import AppError from "../utils/error.util.js";
@@ -15,7 +16,7 @@ export const getRazorpayApiKey = (req, res, next) => {
   }
 };
 
-export const buySubscription = async(req, res, next) => {
+export const buySubscription = async (req, res, next) => {
   try {
     const { id } = req.user;
     const user = await User.findById(id);
@@ -28,11 +29,15 @@ export const buySubscription = async(req, res, next) => {
       return next(new AppError("Admin cannot purchase a subscription", 400));
     }
 
+    console.log("Creating subscription with plan_id:", process.env.RAZORPAY_PLAN_ID);
+
     const subscription = await razorpay.subscriptions.create({
       plan_id: process.env.RAZORPAY_PLAN_ID,
       customer_notify: 1,
-      total_count: 12,
+      total_count: 25,
     });
+
+    console.log("Subscription response:", subscription);
 
     user.subscription.id = subscription.id;
     user.subscription.status = subscription.status;
@@ -45,15 +50,17 @@ export const buySubscription = async(req, res, next) => {
       subscription_id: subscription.id,
     });
   } catch (error) {
+    console.error("Error in buySubscription:", error);
     next(new AppError("Something went wrong during subscription creation", 500));
   }
 };
 
+
 export const verifyScription = async (req, res, next) => {
   try {
     const { id } = req.user;
-    const { Payment_id, subscription_id, signature_id } = req.body;
-
+    const { razorpay_payment_id, razorpay_subscription_id, razorpay_signature } = req.body;
+    
     const user = await User.findById(id);
 
     if (!user) {
@@ -67,14 +74,14 @@ export const verifyScription = async (req, res, next) => {
       .update(`${razorpay_payment_id}|${subscriptionId}`)
       .digest("hex");
 
-    if (generatedSignature !== signature_id) {
+    if (generatedSignature !== razorpay_signature) {
       return next(new AppError("Payment not verified, please try again", 500));
     }
 
     await Payment.create({
-      Payment_id,
-      subscription_id,
-      signature_id,
+      Payment_id: razorpay_payment_id,
+      subscription_id: razorpay_subscription_id,
+      signature_id: razorpay_signature,
     });
 
     user.subscription.status = "active";
@@ -88,6 +95,7 @@ export const verifyScription = async (req, res, next) => {
     next(error);
   }
 };
+
 
 export const cancelSubscription = async (req, res, next) => {
   try {
