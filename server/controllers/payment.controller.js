@@ -29,15 +29,12 @@ export const buySubscription = async (req, res, next) => {
       return next(new AppError("Admin cannot purchase a subscription", 400));
     }
 
-    console.log("Creating subscription with plan_id:", process.env.RAZORPAY_PLAN_ID);
 
     const subscription = await razorpay.subscriptions.create({
       plan_id: process.env.RAZORPAY_PLAN_ID,
       customer_notify: 1,
       total_count: 25,
     });
-
-    console.log("Subscription response:", subscription);
 
     user.subscription.id = subscription.id;
     user.subscription.status = subscription.status;
