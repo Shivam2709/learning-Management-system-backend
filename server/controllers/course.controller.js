@@ -184,11 +184,32 @@ const addLectureToCourseById = async (req, res, next) => {
     })
 }
 
+const removeLectureFromCourse = async (req, res, next) => {
+    const { courseId, lectureId } = req.query;
+
+    console.log(courseId);
+
+    if(!courseId) {
+        return next(new AppError('Course id is required', 400));
+    }
+
+    if(!lectureId) {
+        return next(new AppError('Lecture id is required', 400));
+    }
+
+    const course = await Course.findById(courseId);
+
+    if(!course) {
+        return next(new AppError('Invalid ID or Course does not exist.', 400));
+    }
+}
+
 export { 
     getAllCourses, 
     getLecturesByCourseId,
     createCourse,
     updateCourse,
     removeCourse,
-    addLectureToCourseById
+    addLectureToCourseById,
+    removeLectureFromCourse
 }
