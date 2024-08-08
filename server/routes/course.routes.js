@@ -17,7 +17,6 @@ router.route('/')
             isLoggedIn,
             authorizedRoles('ADMIN'),
             removeCourse,
-            removeLectureFromCourse
         )
 
 router.route('/:id')
@@ -32,6 +31,13 @@ router.route('/:id')
             authorizedRoles('ADMIN'),
             upload.single('lecture'),
             addLectureToCourseById
+        );
+
+router.route('/lecture')
+        .delete(
+            isLoggedIn,
+            authorizedRoles('ADMIN'),
+            removeLectureFromCourse // Delete a specific lecture from a course
         );
 
 
