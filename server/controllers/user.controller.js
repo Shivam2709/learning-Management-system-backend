@@ -5,7 +5,7 @@ import cloudinary from "cloudinary";
 import crypto from "crypto";
 import fs from "fs/promises";
 const cookieOptions = {
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  maxAge: 1 * 24 * 60 * 60 * 1000, // 1 days
   httpOnly: true,
   secure: true,
 };
