@@ -1,3 +1,4 @@
+import { log } from "console";
 import Payment from "../models/payment.model.js";
 import User from "../models/user.model.js";
 import { razorpay } from "../server.js";
@@ -133,10 +134,30 @@ export const allPayments = async (req, res, next) => {
       count: count || 10,
     });
 
+    const monthlySalesRecord = await Payment.aggregate([
+      {
+        $group: {
+          _id: { $month: "$createdAt" },
+          totalSales: { $sum: "$amount" },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]).exec();
+
+    const totalSalesAmount = monthlySalesRecord.reduce((acc, record) => acc + record.totalSales, 0);
+
+    // Calculate the total number of payments from the subscription data
+    const allPayments = subscriptions.items.reduce((acc, item) => acc + item.paid_count, 0);
+
+
     res.status(200).json({
       success: true,
       message: 'All payments',
-      subscriptions
+      subscriptions,
+      allPayments, 
+      monthlySalesRecord: totalSalesAmount,
     });
   } catch (error) {
     next(error);

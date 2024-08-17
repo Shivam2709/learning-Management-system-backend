@@ -30,30 +30,17 @@ const userStats = async (req, res) => {
     const allUsersCount = await User.countDocuments({});
 
     const subscribeCount = await User.countDocuments({ isSubscribed: true });
-
-    const monthlySalesRecord = await Payment.aggregate([
-      {
-        $group: {
-          _id: { $month: "$createdAt" },
-          totalSales: { $sum: "$amount" },
-        },
-      },
-      {
-        $sort: { _id: 1 },
-      },
-    ]).exec();
-
-    const salesData = Array(12).fill(0);
-    monthlySalesRecord.forEach((record) => {
-      salesData[record._id - 1] = record.totalSales;
-    });
+    
+    console.log("all User", allUsersCount);
+    console.log("sub", subscribeCount);
+    
+    
 
     res.status(200).json({
       success: true,
       data: {
         allUsersCount,
         subscribeCount,
-        monthlySalesRecord: salesData,
       },
     });
   } catch (error) {
