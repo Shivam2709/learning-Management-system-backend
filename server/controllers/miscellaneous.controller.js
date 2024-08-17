@@ -29,7 +29,7 @@ const userStats = async (req, res) => {
   try {
     const allUsersCount = await User.countDocuments({});
 
-    const subscribeCount = await User.countDocuments({ isSubscribed: true });
+    const subscribeCount = await User.countDocuments({ "subscription.status": "active" });
     
     console.log("all User", allUsersCount);
     console.log("sub", subscribeCount);
