@@ -1,4 +1,3 @@
-import { log } from "console";
 import Payment from "../models/payment.model.js";
 import User from "../models/user.model.js";
 import { razorpay } from "../server.js";
@@ -30,7 +29,6 @@ export const buySubscription = async (req, res, next) => {
       return next(new AppError("Admin cannot purchase a subscription", 400));
     }
 
-
     const subscription = await razorpay.subscriptions.create({
       plan_id: process.env.RAZORPAY_PLAN_ID,
       customer_notify: 1,
@@ -49,16 +47,21 @@ export const buySubscription = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error in buySubscription:", error);
-    next(new AppError("Something went wrong during subscription creation", 500));
+    next(
+      new AppError("Something went wrong during subscription creation", 500)
+    );
   }
 };
-
 
 export const verifyScription = async (req, res, next) => {
   try {
     const { id } = req.user;
-    const { razorpay_payment_id, razorpay_subscription_id, razorpay_signature } = req.body;
-    
+    const {
+      razorpay_payment_id,
+      razorpay_subscription_id,
+      razorpay_signature,
+    } = req.body;
+
     const user = await User.findById(id);
 
     if (!user) {
@@ -93,7 +96,6 @@ export const verifyScription = async (req, res, next) => {
     next(error);
   }
 };
-
 
 export const cancelSubscription = async (req, res, next) => {
   try {
@@ -134,30 +136,30 @@ export const allPayments = async (req, res, next) => {
       count: count || 10,
     });
 
-    const monthlySalesRecord = await Payment.aggregate([
-      {
-        $group: {
-          _id: { $month: "$createdAt" },
-          totalSales: { $sum: "$amount" },
-        },
-      },
-      {
-        $sort: { _id: 1 },
-      },
-    ]).exec();
+    const payments = await Payment.find({}).sort({ createdAt: 1 });
 
-    const totalSalesAmount = monthlySalesRecord.reduce((acc, record) => acc + record.totalSales, 0);
+    const monthlySalesRecord = new Array(12).fill(0);
 
-    // Calculate the total number of payments from the subscription data
-    const allPayments = subscriptions.items.reduce((acc, item) => acc + item.paid_count, 0);
+    const now = new Date();
 
+    payments.forEach((payment) => {
+      const createdAt = new Date(payment.createdAt);
+      const paymentMonth = createdAt.getMonth();
+
+      monthlySalesRecord[paymentMonth] += 1;
+    });
+
+    const allPayments = subscriptions.items.reduce(
+      (acc, item) => acc + item.paid_count,
+      0
+    );
 
     res.status(200).json({
       success: true,
-      message: 'All payments',
+      message: "All payments",
       subscriptions,
-      allPayments, 
-      monthlySalesRecord: totalSalesAmount,
+      allPayments,
+      monthlySalesRecord,
     });
   } catch (error) {
     next(error);

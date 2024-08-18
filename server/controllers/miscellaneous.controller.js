@@ -29,12 +29,9 @@ const userStats = async (req, res) => {
   try {
     const allUsersCount = await User.countDocuments({});
 
-    const subscribeCount = await User.countDocuments({ "subscription.status": "active" });
-    
-    console.log("all User", allUsersCount);
-    console.log("sub", subscribeCount);
-    
-    
+    const subscribeCount = await User.countDocuments({
+      "subscription.status": "active",
+    });
 
     res.status(200).json({
       success: true,
